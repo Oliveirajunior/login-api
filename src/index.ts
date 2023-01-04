@@ -2,7 +2,8 @@ import * as dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import {itemsRouter} from "./users/users.router"
+import {itemsRouter} from "./users/users.router";
+import { loginRouter } from "./login/login.router";
 
 dotenv.config();
 
@@ -18,5 +19,6 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use('/users', itemsRouter);
+app.use('/login', loginRouter);
 
 app.listen(PORT, () => console.log(`listen on port ${PORT}`));

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
-import {UserService} from "./users.service"
+import {UserService} from "./users.service";
+import bcrypt from 'bcrypt';
 
 const userService = new UserService();
 
@@ -23,7 +24,8 @@ export class UserController {
     if(userExists) {
       return res.status(400).send("user already exists");
     }
-    await userService.create(name, email, password);
+    const hashPassword:string = await bcrypt.hash(password, 10);
+    await userService.create(name, email, hashPassword);
     return res.status(201).send("user created");
   };
 
