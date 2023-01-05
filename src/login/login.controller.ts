@@ -8,25 +8,22 @@ const userService = new UserService();
 
 const secret:string = process.env.JWT_SECRET as string;
 
-type JwtPayload = {
-  id: string
-};
-
 export class LoginController {
-  async createLogin (req:Request, res:Response) {
+  async createLogin (req:Request, res:Response):Promise<Response> {
 
-    const {email, password} = req.body;
+    try {
+      const {email, password} = req.body;
 
-    const user:User|null = await userService.findByMail(email);
+      const user:User|null = await userService.findByMail(email);
 
     if(!user) {
-      res.status(404).send('email or password is invalid');
+      return res.status(404).json('email or password is invalid');
       
     } else {
       const passwordCheck:boolean = await bcrypt.compare(password, user.password);
 
       if (!passwordCheck) {
-        res.status(404).send('email or password is invalid');
+        return res.status(404).json('email or password is invalid');
 
       } else {
 
@@ -34,17 +31,24 @@ export class LoginController {
 
         const {password, ...userLogin} = user;
 
-        res.status(200).json({
+        return res.status(200).json({
           user: userLogin,
           token: token,
 
         });
       }
     };
+    } catch (error:any) {
+      return res.status(500).json(error.message);
+    }
   };
 
   async getProfile (req:Request, res:Response) {
-    return res.status(200).json(req.user);
+    try {
+      return res.status(200).json(req.user);
+    } catch (error:any) {
+      return res.status(500).json(error.message);
+    }
   };
 
 };
